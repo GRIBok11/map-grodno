@@ -1,0 +1,455 @@
+:root {
+  --primary: #1a56db;
+  --primary-dark: #1e3a8a;
+  --primary-light: #3b82f6;
+  --accent: #dc2626;
+  --accent-light: #ef4444;
+  --background: #f8fafc;
+  --surface: #ffffff;
+  --text-primary: #1e293b;
+  --text-secondary: #475569;
+  --border: #e2e8f0;
+  --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+  --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+  --border-radius: 8px;
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: 'Segoe UI', Roboto, sans-serif;
+}
+
+body {
+  margin: 0;
+  background: var(--background);
+  color: var(--text-primary);
+  overflow: hidden;
+}
+
+.app {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+}
+
+.map-container {
+  flex: 1;
+  width: 100%;
+  z-index: 1;
+}
+
+/* Верхняя панель управления */
+#top-controls {
+  background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(10px);
+  padding: 15px 20px;
+  box-shadow: var(--shadow-lg);
+  z-index: 1000;
+  border-bottom: 1px solid var(--border);
+  display: flex;
+  flex-wrap: wrap;
+  gap: 15px;
+  align-items: center;
+}
+
+.logo {
+  font-weight: 700;
+  color: var(--primary);
+  font-size: 1.4rem;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-right: 10px;
+}
+
+.logo i {
+  font-size: 1.6rem;
+}
+
+.control-group {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 8px 15px;
+  background: rgba(255, 255, 255, 0.7);
+  border-radius: var(--border-radius);
+  box-shadow: var(--shadow);
+}
+
+.control-group-title {
+  font-weight: 600;
+  color: var(--text-primary);
+  font-size: 0.9rem;
+  white-space: nowrap;
+}
+
+/* Стили для выпадающих списков */
+select {
+  padding: 8px 12px;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  background: var(--surface);
+  font-size: 0.9rem;
+  transition: all 0.3s;
+  min-width: 150px;
+}
+
+select:focus {
+  outline: none;
+  border-color: var(--primary);
+  box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.2);
+}
+
+/* Группа переключателей видимости */
+.visibility-controls {
+  display: flex;
+  gap: 5px;
+}
+
+.icon-toggle {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  background-color: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  padding: 8px;
+  cursor: pointer;
+  transition: all 0.3s;
+  min-width: 60px;
+}
+
+.icon-toggle:hover {
+  border-color: var(--primary-light);
+  background-color: #f0f4ff;
+}
+
+.icon-toggle.active {
+  border-color: var(--primary);
+  background-color: #dbeafe;
+}
+
+.icon-toggle input {
+  position: absolute;
+  opacity: 0;
+  pointer-events: none;
+}
+
+.icon-toggle i {
+  font-size: 16px;
+  color: var(--text-secondary);
+  margin-bottom: 4px;
+}
+
+.icon-toggle.active i {
+  color: var(--primary);
+}
+
+.toggle-label {
+  font-size: 0.75rem;
+  font-weight: 500;
+  color: var(--text-secondary);
+}
+
+.icon-toggle.active .toggle-label {
+  color: var(--primary);
+  font-weight: 600;
+}
+
+/* Группа кнопок */
+.icon-button-group {
+  display: flex;
+  gap: 8px;
+}
+
+.icon-button {
+  position: relative;
+  width: 40px;
+  height: 40px;
+  background: linear-gradient(135deg, var(--primary) 0%, var(--primary-light) 100%);
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: all 0.3s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  box-shadow: var(--shadow);
+}
+
+.icon-button:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-lg);
+}
+
+.icon-button:active {
+  transform: translateY(0);
+}
+
+.icon-button.danger {
+  background: linear-gradient(135deg, var(--accent) 0%, var(--accent-light) 100%);
+}
+
+.icon-button i {
+  font-size: 16px;
+}
+
+.icon-button[title]:hover::after {
+  content: attr(title);
+  position: absolute;
+  bottom: -35px;
+  left: 50%;
+  transform: translateX(-50%);
+  background-color: var(--text-primary);
+  color: white;
+  padding: 6px 10px;
+  font-size: 0.8rem;
+  border-radius: 6px;
+  white-space: nowrap;
+  box-shadow: var(--shadow);
+  z-index: 10;
+}
+
+.icon-button input[type="file"] {
+  position: absolute;
+  opacity: 0;
+  width: 100%;
+  height: 100%;
+  cursor: pointer;
+}
+
+/* Поиск */
+#searchInput {
+  padding: 8px 12px;
+  font-size: 0.9rem;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  background-color: white;
+  transition: all 0.3s;
+  min-width: 200px;
+}
+
+#searchInput:focus {
+  outline: none;
+  border-color: var(--primary);
+  box-shadow: 0 0 0 2px rgba(67, 97, 238, 0.2);
+}
+
+/* Боковая панель для точек и маршрутов */
+.side-panel {
+  position: absolute;
+  top: 80px;
+  right: 20px;
+  z-index: 999;
+  background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(10px);
+  padding: 15px;
+  border-radius: var(--border-radius);
+  box-shadow: var(--shadow-lg);
+  max-height: calc(100vh - 120px);
+  overflow-y: auto;
+  width: 300px;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  transition: all 0.3s ease;
+}
+
+.panel-section {
+  margin-bottom: 20px;
+}
+
+.section-title {
+  font-size: 1rem;
+  font-weight: 600;
+  margin-bottom: 12px;
+  color: var(--text-primary);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding-bottom: 8px;
+  border-bottom: 1px solid var(--border);
+}
+
+.section-title::before {
+  content: "";
+  display: block;
+  width: 4px;
+  height: 16px;
+  background: var(--primary);
+  border-radius: 2px;
+}
+
+/* Список точек */
+#pointList {
+  max-height: 200px;
+  overflow-y: auto;
+  border-radius: 6px;
+  border: 1px solid var(--border);
+  background: white;
+}
+
+#pointList label {
+  display: flex;
+  flex-direction: column;
+  padding: 10px 12px;
+  border-bottom: 1px solid var(--border);
+  transition: all 0.2s;
+  cursor: pointer;
+}
+
+#pointList label:hover {
+  background-color: #f1f5f9;
+}
+
+#pointList label.selected {
+  background-color: #dbeafe;
+}
+
+#pointList label:last-child {
+  border-bottom: none;
+}
+
+#pointList b {
+  font-weight: 600;
+  margin-bottom: 4px;
+  font-size: 0.9rem;
+}
+
+#pointList small {
+  font-size: 0.8rem;
+  color: var(--text-secondary);
+}
+
+/* Список маршрутов */
+#routeList {
+  max-height: 200px;
+  overflow-y: auto;
+}
+
+.route-entry {
+  margin-bottom: 10px;
+  padding: 10px 12px;
+  border-left: 3px solid;
+  background-color: white;
+  border-radius: 6px;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
+  transition: all 0.2s;
+}
+
+.route-entry:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.route-entry b {
+  display: block;
+  margin-bottom: 4px;
+  font-weight: 600;
+  font-size: 0.9rem;
+}
+
+.placeholder-text {
+  font-size: 0.9rem;
+  color: var(--text-secondary);
+  font-style: italic;
+}
+
+/* Легенда карты */
+.map-legend {
+  position: absolute;
+  bottom: 20px;
+  left: 20px;
+  z-index: 1000;
+  background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(10px);
+  padding: 12px;
+  border-radius: var(--border-radius);
+  box-shadow: var(--shadow-lg);
+  max-width: 180px;
+}
+
+.legend-title {
+  font-weight: 600;
+  margin-bottom: 8px;
+  color: var(--primary);
+  font-size: 0.9rem;
+}
+
+.legend-item {
+  display: flex;
+  align-items: center;
+  margin-bottom: 6px;
+}
+
+.legend-color {
+  width: 16px;
+  height: 8px;
+  margin-right: 8px;
+  border-radius: 2px;
+}
+
+.legend-label {
+  font-size: 0.8rem;
+}
+
+/* Адаптивность */
+@media (max-width: 1200px) {
+  #top-controls {
+    padding: 12px 15px;
+    gap: 10px;
+  }
+  
+  .control-group {
+    padding: 6px 10px;
+  }
+  
+  .side-panel {
+    width: 280px;
+  }
+}
+
+@media (max-width: 900px) {
+  #top-controls {
+    flex-direction: column;
+    height: auto;
+    padding: 10px;
+  }
+  
+  .control-group {
+    width: 100%;
+    justify-content: space-between;
+  }
+  
+  .side-panel {
+    width: 250px;
+    top: 150px;
+  }
+}
+
+/* Скролл */
+::-webkit-scrollbar {
+  width: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: #f1f1f1;
+  border-radius: 10px;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #c1c1c1;
+  border-radius: 10px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #a8a8a8;
+}
+
+.leaflet-container {
+  height: 100%;
+  width: 100%;
+}

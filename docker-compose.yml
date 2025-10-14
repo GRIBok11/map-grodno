@@ -1,0 +1,28 @@
+services:
+  tileserver:
+    image: klokantech/tileserver-gl
+    container_name: tileserver
+    ports:
+      - "8080:8080"
+    volumes:
+      - ./data:/data
+    command: --mbtiles belarus.mbtiles --port 8080
+    restart: unless-stopped  # ← исправлено
+
+  react-app:
+    build: 
+      context: .
+      dockerfile: Dockerfile
+    container_name: react-app
+    ports:
+      - "5173:5173"
+    environment:
+      - REACT_APP_TILESERVER_URL=http://localhost:8080
+    depends_on:
+      - tileserver
+    restart: unless-stopped  # ← исправлено
+    volumes:
+      - /app/node_modules
+      - .:/app
+    stdin_open: true
+    tty: true
