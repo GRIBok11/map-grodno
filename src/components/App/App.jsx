@@ -16,9 +16,9 @@ import './App.css';
 // Исправление иконок Leaflet
 delete L.Icon.Default.prototype._getIconUrl;
 L.Icon.Default.mergeOptions({
-  iconRetinaUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/images/marker-icon-2x.png  ',
-  iconUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/images/marker-icon.png  ',
-  shadowUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/images/marker-shadow.png  ',
+  iconRetinaUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/images/marker-icon-2x.png    ',
+  iconUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/images/marker-icon.png    ',
+  shadowUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/images/marker-shadow.png    ',
 });
 
 const App = () => {
@@ -29,9 +29,9 @@ const App = () => {
   const [searchQuery, setSearchQuery] = useState('');
   const [showPoints, setShowPoints] = useState(true);
   const [showRoutes, setShowRoutes] = useState(true);
-  const [showButtons, setShowButtons] = useState(true);
+  const [showButtons, setShowButtons] = useState(true); // Это состояние теперь отвечает за отображение SidePanel
   const [currentMarkers, setCurrentMarkers] = useState(new Map());
-  const [isSidePanelOpen, setIsSidePanelOpen] = useState(true);
+  // const [isSidePanelOpen, setIsSidePanelOpen] = useState(true); // УБРАЛИ это состояние
 
   const [loadedRoadGroups, setLoadedRoadGroups] = useState(new Set());
   const [showRoads, setShowRoads] = useState(true);
@@ -70,7 +70,7 @@ const App = () => {
   };
 
   const loadGroupPointsHandler = async (file) => {
-    if (!file || loadedGroups.has(file) || !groups) { // Добавлена проверка на groups
+    if (!file || loadedGroups.has(file) || !groups) {
       if (loadedGroups.has(file)) {
         alert(`Группа "${file}" уже загружена.`);
       }
@@ -104,7 +104,7 @@ const App = () => {
   };
 
   const loadRoadGroupHandler = async (file) => {
-    if (!file || loadedRoadGroups.has(file) || !roadGroups) { // Добавлена проверка на roadGroups
+    if (!file || loadedRoadGroups.has(file) || !roadGroups) {
       if (loadedRoadGroups.has(file)) {
          alert(`Группа дорог "${file}" уже загружена.`);
       }
@@ -273,11 +273,11 @@ const App = () => {
   return (
     <div className="app">
       <ControlPanel
-        groups={groups} // <--- Передаём groups
+        groups={groups}
         loadedGroups={Array.from(loadedGroups)}
         onGroupAdd={loadGroupPointsHandler}
         onGroupRemove={removeGroupPointsHandler}
-        roadGroups={roadGroups} // <--- Передаём roadGroups
+        roadGroups={roadGroups}
         loadedRoadGroups={Array.from(loadedRoadGroups)}
         onRoadGroupAdd={loadRoadGroupHandler}
         onRoadGroupRemove={removeRoadGroupHandler}
@@ -288,14 +288,14 @@ const App = () => {
         setShowRoutes={setShowRoutes}
         showRoads={showRoads}
         setShowRoads={setShowRoads}
-        showButtons={showButtons}
-        setShowButtons={setShowButtons}
+        showButtons={showButtons} // Передаём showButtons
+        setShowButtons={setShowButtons} // Передаём setShowButtons
         buildRoute={buildRoute}
         clearRoutes={clearRoutes}
         downloadGeoJSON={downloadGeoJSON}
         handleGeoJSONUpload={handleGeoJSONUpload}
-        isSidePanelOpen={isSidePanelOpen}
-        toggleSidePanel={() => setIsSidePanelOpen(!isSidePanelOpen)}
+        isSidePanelOpen={showButtons} // <-- Передаём showButtons вместо isSidePanelOpen
+        toggleSidePanel={() => setShowButtons(!showButtons)} // <-- Передаём функцию для переключения showButtons
         handlePointsGeoJSONUpload={handlePointsGeoJSONUpload}
       />
 
@@ -316,25 +316,11 @@ const App = () => {
       </div>
 
       <SidePanel
-        isOpen={isSidePanelOpen}
-        onClose={() => setIsSidePanelOpen(false)}
+        isOpen={showButtons} // <-- SidePanel теперь зависит от showButtons
+        onClose={() => setShowButtons(false)} // <-- onClose теперь вызывает setShowButtons(false)
         searchQuery={searchQuery}
         setSearchQuery={setSearchQuery}
-        showButtons={showButtons}
-        setShowButtons={setShowButtons}
-        handlePointsGeoJSONUpload={handlePointsGeoJSONUpload}
-        handleGeoJSONUpload={handleGeoJSONUpload}
-        downloadGeoJSON={downloadGeoJSON}
-        groups={groups}
-        loadedGroups={Array.from(loadedGroups)}
-        onGroupAdd={loadGroupPointsHandler}
-        onGroupRemove={removeGroupPointsHandler}
-        roadGroups={roadGroups}
-        loadedRoadGroups={Array.from(loadedRoadGroups)}
-        onRoadGroupAdd={loadRoadGroupHandler}
-        onRoadGroupRemove={removeRoadGroupHandler}
-        onRoadsClear={clearRoads}
-        clearRoutes={clearRoutes}
+        // УБРАЛИ все пропсы, связанные с выпадающим списком
       >
         <>
           <PointList

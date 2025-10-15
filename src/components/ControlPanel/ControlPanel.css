@@ -3,7 +3,7 @@
   align-items: center;
   justify-content: space-between;
   padding: 10.8px 14.4px; /* 12px * 0.9, 16px * 0.9 */
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  background: linear-gradient(135deg, #2588ac 0%, #1326b1 100%);
   color: white;
   box-shadow: 0 2px 10px rgba(0,0,0,0.1);
   z-index: 1000;
@@ -353,4 +353,100 @@
   cursor: pointer;
 }
 
+
+/* src/components/ControlPanel/ControlPanel.css */
+/* ... (остальные стили из предыдущего файла) ... */
+
+/* Стили для выпадающего списка с кнопками (новый) */
+.modern-dropdown-wrapper {
+  position: relative;
+  display: inline-block;
+}
+
+.dropdown-toggle {
+  background: rgba(255, 255, 255, 0.2);
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: space-between; /* Для стрелки */
+  padding-right: 8px; /* Меньше отступа справа для стрелки */
+  min-width: 150px; /* Минимальная ширина, как у селекта */
+  border-radius: 6px; /* Скругление как у селекта */
+}
+
+.dropdown-toggle:hover {
+  background: rgba(255, 255, 255, 0.3);
+}
+
+.dropdown-toggle.open {
+  background: rgba(255, 255, 255, 0.3); /* Стиль при открытии */
+}
+
+.dropdown-arrow {
+  margin-left: 4px; /* Отступ от текста */
+  font-size: 0.7em;
+  color: rgba(255, 255, 255, 0.7);
+}
+
+.dropdown-panel-content {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  background: white;
+  border-radius: 6px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  width: 200px; /* Фиксированная ширина */
+  z-index: 1002; /* Выше, чем основная панель */
+  padding: 8px 0; /* Отступы внутри */
+  display: flex;
+  flex-direction: column;
+  gap: 4px; /* Отступ между кнопками */
+  margin-top: 4px; /* Небольшой отступ от кнопки */
+}
+
+/* Стили для кнопок внутри выпадающего списка */
+.dropdown-panel-content .modern-btn,
+.dropdown-panel-content .file-upload {
+  width: calc(100% - 16px); /* Ширина с учетом отступов */
+  margin: 0 8px; /* Отступы слева и справа */
+  text-align: left; /* Выравнивание текста по левому краю */
+  border-radius: 4px; /* Меньше скругления для кнопок внутри */
+  font-size: 0.85em; /* Чуть меньше шрифт */
+  padding: 6px 10px; /* Меньше padding */
+  display: flex; /* Для иконки и текста */
+  align-items: center;
+  gap: 6px;
+}
+
+.dropdown-panel-content .modern-btn.secondary,
+.dropdown-panel-content .file-upload {
+  background: #f0f0f0; /* Светлый фон для кнопок внутри */
+  color: #333;
+}
+
+.dropdown-panel-content .modern-btn.secondary:hover,
+.dropdown-panel-content .file-upload:hover {
+  background: #e0e0e0; /* Темнее при наведении */
+}
+
+.dropdown-panel-content .modern-btn.danger {
+  background: #ffebee; /* Светло-красный фон для danger */
+  color: #c62828;
+}
+
+.dropdown-panel-content .modern-btn.danger:hover {
+  background: #ffcdd2; /* Темнее при наведении */
+}
+
+.modern-select {
+  font-size: 14px;
+  font-family: 'Segoe UI', sans-serif;
+  color: #fff; /* Белый текст на кнопке */
+}
+
+/* Стили для выпадающих опций */
+.modern-select option {
+  color: #333; /* Тёмный текст внутри списка */
+  background-color: #fff; /* Белый фон опций */
+}
 
