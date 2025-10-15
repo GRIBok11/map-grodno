@@ -1,7 +1,7 @@
 // src/components/ControlPanel/ControlPanel.jsx
 import React, { useState } from 'react';
 import './ControlPanel.css';
-import { FaMapMarkerAlt, FaRoute, FaSlidersH, FaRocket, FaTrashAlt, FaDownload, FaUpload, FaChevronLeft, FaChevronRight, FaPrint, FaPlus, FaMinus } from 'react-icons/fa';
+import { FaMapMarkerAlt, FaRoute, FaSlidersH, FaRocket, FaTrashAlt, FaDownload, FaUpload, FaChevronLeft, FaChevronRight, FaPrint, FaUser, FaMinus } from 'react-icons/fa';
 
 const ControlPanel = ({
   groups = [],
@@ -25,7 +25,9 @@ const ControlPanel = ({
   clearRoutes,
   downloadGeoJSON,
   handleGeoJSONUpload,
-  isSidePanelOpen,
+  onLogout, 
+  onOpenLogin, 
+  isAuthenticated,
   toggleSidePanel,
   handlePointsGeoJSONUpload,
 }) => {
@@ -60,7 +62,7 @@ const ControlPanel = ({
             className="modern-select"
             disabled={loadedRoadGroups.length >= roadGroups.length}
           >
-            <option value="">Добавить группу дорог</option>
+            <option value="">Маршруты</option>
             {roadGroups.filter(g => !loadedRoadGroups.includes(g)).map(group => (
               <option key={group} value={group}>
                 {group.replace('.geojson', '')}
@@ -69,34 +71,6 @@ const ControlPanel = ({
           </select>
           <div className="select-arrow">+</div>
         </div>
-
-        {/* Отображение загруженных групп дорог с кнопкой удаления */}
-        <div className="loaded-groups-list">
-          {loadedRoadGroups.map(group => (
-            <div key={group} className="loaded-group-item">
-              <span className="group-name">{group.replace('.geojson', '')}</span>
-              <button
-                className="remove-group-btn"
-                onClick={() => onRoadGroupRemove(group)}
-                title={`Удалить группу дорог ${group}`}
-              >
-                <FaMinus />
-              </button>
-            </div>
-          ))}
-        </div>
-
-        {/* Кнопка очистки всех дорог */}
-        {loadedRoadGroups.length > 0 && (
-          <button
-            className="modern-btn danger"
-            onClick={onRoadsClear}
-            title="Очистить все загруженные дороги"
-          >
-            <span className="btn-icon"><FaTrashAlt /></span>
-            <span className="btn-text">Очистить дороги</span>
-          </button>
-        )}
 
         {/* Селектор для добавления точек */}
         <div className="control-group modern-select-wrapper">
@@ -110,7 +84,7 @@ const ControlPanel = ({
             className="modern-select"
             disabled={loadedGroups.length >= groups.length}
           >
-            <option value="">Добавить группу точек</option>
+            <option value="">Точки</option>
             {groups.filter(g => !loadedGroups.includes(g)).map(group => (
               <option key={group} value={group}>
                 {group.replace('.json', '')}
@@ -118,22 +92,6 @@ const ControlPanel = ({
             ))}
           </select>
           <div className="select-arrow">+</div>
-        </div>
-
-        {/* Отображение загруженных групп точек с кнопкой удаления */}
-        <div className="loaded-groups-list">
-          {loadedGroups.map(group => (
-            <div key={group} className="loaded-group-item">
-              <span className="group-name">{group.replace('.json', '')}</span>
-              <button
-                className="remove-group-btn"
-                onClick={() => onGroupRemove(group)}
-                title={`Удалить группу точек ${group}`}
-              >
-                <FaMinus />
-              </button>
-            </div>
-          ))}
         </div>
 
         {/* Выпадающий список с кнопками действий (открывается по наведению) */}
@@ -144,7 +102,6 @@ const ControlPanel = ({
         >
           <button
             className={`modern-btn secondary dropdown-toggle ${isDropdownOpen ? 'open' : ''}`}
-            // Убираем onClick, так как теперь открытие по наведению
             title="Показать дополнительные действия"
           >
             <span className="btn-icon"><FaSlidersH /></span>
@@ -211,6 +168,13 @@ const ControlPanel = ({
             onChange={setShowRoutes}
             tooltip="Показать/скрыть маршруты"
           />
+          <ModernToggle
+            icon={<FaSlidersH />}
+            label="Дороги"
+            checked={showRoads}
+            onChange={setShowRoads}
+            tooltip="Показать/скрыть дороги"
+          />
           {/* Кнопка "Панель" теперь просто переключает боковую панель */}
           <ModernToggle
             icon={<FaSlidersH />}
@@ -245,6 +209,23 @@ const ControlPanel = ({
             variant="secondary"
             tooltip="Распечатать текущую карту и маршруты"
           />
+          {isAuthenticated ? (
+            <ModernButton
+              icon={<FaUser />}
+              label="Выйти"
+              onClick={onLogout}
+              variant="secondary"
+              tooltip="Выйти из системы"
+            />
+          ) : (
+            <ModernButton
+              icon={<FaUser />}
+              label="Войти"
+              onClick={onOpenLogin}
+              variant="secondary"
+              tooltip="Войти в систему"
+            />
+          )}
         </div>
 
         <button

@@ -9,6 +9,7 @@ import ControlPanel from '../ControlPanel/ControlPanel';
 import SidePanel from '../SidePanel/SidePanel';
 import PointList from '../PointList/PointList';
 import RouteList from '../RouteList/RouteList';
+import LoginPage from '../LoginPage/LoginPage'; // Импортируем новый компонент
 import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
 import './App.css';
@@ -22,6 +23,8 @@ L.Icon.Default.mergeOptions({
 });
 
 const App = () => {
+  const [isAuthenticated, setIsAuthenticated] = useState(false); // Состояние аутентификации
+  const [showLoginPage, setShowLoginPage] = useState(false); // Состояние для отображения страницы входа
   const [points, setPoints] = useState([]);
   const [loadedGroups, setLoadedGroups] = useState(new Set());
   const [routes, setRoutes] = useState([]);
@@ -29,9 +32,9 @@ const App = () => {
   const [searchQuery, setSearchQuery] = useState('');
   const [showPoints, setShowPoints] = useState(true);
   const [showRoutes, setShowRoutes] = useState(true);
-  const [showButtons, setShowButtons] = useState(true); // Это состояние теперь отвечает за отображение SidePanel
+  const [showButtons, setShowButtons] = useState(true);
   const [currentMarkers, setCurrentMarkers] = useState(new Map());
-  // const [isSidePanelOpen, setIsSidePanelOpen] = useState(true); // УБРАЛИ это состояние
+  const [isSidePanelOpen, setIsSidePanelOpen] = useState(true);
 
   const [loadedRoadGroups, setLoadedRoadGroups] = useState(new Set());
   const [showRoads, setShowRoads] = useState(true);
@@ -119,12 +122,14 @@ const App = () => {
         .map((feature, index) => {
           const coords = feature.geometry.coordinates.map(c => [c[1], c[0]]);
           const name = feature.properties?.name || `Дорога ${index + 1}`;
+          const baseWeight = 3;
+          const weight = Math.max(1, baseWeight - (loadedRoadGroups.size + 1));
           return {
             id: `${file.replace('.geojson', '')}-${index}`,
             name,
             coordinates: coords,
             color: color,
-            weight: 2,
+            weight: weight,
             type: 'geojson',
             group: file
           };
@@ -186,7 +191,7 @@ const App = () => {
       name: `${point1.name} → ${point2.name}`,
       coordinates: shiftedCoordinates.length > 0 ? shiftedCoordinates : intermediatePoints,
       color: color,
-      weight: 2,
+      weight: 3,
       type: 'calculated'
     };
 
@@ -265,9 +270,34 @@ const App = () => {
     }
   };
 
-  // Проверяем, загружены ли данные перед рендером
+  // Функция для входа
+  const handleLogin = (username) => {
+    // Здесь можно сохранить токен или данные пользователя, например, в localStorage или в контексте
+    // localStorage.setItem('user', JSON.stringify({ username }));
+    setIsAuthenticated(true);
+    setShowLoginPage(false); // Скрываем страницу входа после успешного входа
+  };
+
+  // Функция для открытия страницы входа
+  const openLoginPage = () => {
+    setShowLoginPage(true);
+  };
+
+  // Функция для выхода
+  const handleLogout = () => {
+    // localStorage.removeItem('user');
+    setIsAuthenticated(false);
+    // setShowLoginPage(false); // Не скрываем, а показываем снова, если нужно
+  };
+
+  // Проверяем, загружены ли данные перед рендером (только если аутентифицированы)
   if (!groups || !roadGroups) {
     return <div>Загрузка данных...</div>;
+  }
+
+  // Если нужно показать страницу входа
+  if (showLoginPage) {
+    return <LoginPage onLogin={handleLogin} onGoToMainApp={() => setShowLoginPage(false)} />;
   }
 
   return (
@@ -288,15 +318,18 @@ const App = () => {
         setShowRoutes={setShowRoutes}
         showRoads={showRoads}
         setShowRoads={setShowRoads}
-        showButtons={showButtons} // Передаём showButtons
-        setShowButtons={setShowButtons} // Передаём setShowButtons
+        showButtons={showButtons}
+        setShowButtons={setShowButtons}
         buildRoute={buildRoute}
         clearRoutes={clearRoutes}
         downloadGeoJSON={downloadGeoJSON}
         handleGeoJSONUpload={handleGeoJSONUpload}
-        isSidePanelOpen={showButtons} // <-- Передаём showButtons вместо isSidePanelOpen
-        toggleSidePanel={() => setShowButtons(!showButtons)} // <-- Передаём функцию для переключения showButtons
+        isSidePanelOpen={showButtons}
+        toggleSidePanel={() => setShowButtons(!showButtons)}
         handlePointsGeoJSONUpload={handlePointsGeoJSONUpload}
+        onLogout={handleLogout}
+        onOpenLogin={openLoginPage} // Передаем функцию открытия страницы входа
+        isAuthenticated={isAuthenticated} // Передаем состояние аутентификации
       />
 
       <div className="map-container">
@@ -315,26 +348,24 @@ const App = () => {
         />
       </div>
 
-      <SidePanel
-        isOpen={showButtons} // <-- SidePanel теперь зависит от showButtons
-        onClose={() => setShowButtons(false)} // <-- onClose теперь вызывает setShowButtons(false)
-        searchQuery={searchQuery}
-        setSearchQuery={setSearchQuery}
-        // УБРАЛИ все пропсы, связанные с выпадающим списком
-      >
-        <>
-          <PointList
-            points={filteredPoints}
-            selectedPoints={selectedPoints}
-            onPointSelect={handlePointSelect}
-            visible={showPoints}
-          />
-          <RouteList
-            routes={routes}
-            visible={showRoutes}
-          />
-        </>
-      </SidePanel>
+    
+<SidePanel
+  isOpen={showButtons}
+  onClose={() => setShowButtons(false)}
+  searchQuery={searchQuery}
+  setSearchQuery={setSearchQuery}
+  loadedGroups={Array.from(loadedGroups)}
+  onGroupRemove={removeGroupPointsHandler}
+  loadedRoadGroups={Array.from(loadedRoadGroups)}
+  onRoadGroupRemove={removeRoadGroupHandler}
+  onRoadsClear={clearRoads}
+  points={points}
+  routes={routes}
+  selectedPoints={selectedPoints}
+  onPointSelect={handlePointSelect}
+>
+  {/* Дополнительный контент если нужен */}
+</SidePanel>
     </div>
   );
 };

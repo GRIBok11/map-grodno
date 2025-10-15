@@ -450,3 +450,7 @@
   background-color: #fff; /* Белый фон опций */
 }
 
+.leaflet-control-attribution {
+  display: none !important;
+}
+
