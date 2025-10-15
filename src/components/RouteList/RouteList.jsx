@@ -1,8 +1,10 @@
-import React from 'react'
+// src/components/RouteList/RouteList.jsx
+import React from 'react';
+import './RouteList.css';
 
 const RouteList = ({ routes, visible }) => {
-  if (!visible) return null
-  
+  if (!visible) return null;
+
   return (
     <div className="panel-section">
       <div className="section-title">Построенные маршруты</div>
@@ -11,8 +13,8 @@ const RouteList = ({ routes, visible }) => {
           <div className="placeholder-text">Маршруты появятся здесь после построения</div>
         ) : (
           routes.map(route => (
-            <div 
-              key={route.id} 
+            <div
+              key={route.id}
               className="route-entry"
               style={{borderLeftColor: route.color}}
             >
@@ -22,7 +24,7 @@ const RouteList = ({ routes, visible }) => {
         )}
       </div>
     </div>
-  )
-}
+  );
+};
 
-export default RouteList
+export default RouteList;

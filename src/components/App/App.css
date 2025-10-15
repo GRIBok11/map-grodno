@@ -1,0 +1,14 @@
+/* src/components/App/App.css */
+/* Стили для основного контейнера */
+.app {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+  width: 100vw;
+  position: relative;
+}
+
+.map-container {
+  flex: 1;
+  z-index: 1;
+}
