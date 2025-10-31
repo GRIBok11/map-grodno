@@ -1,18 +1,10 @@
-FROM node:18-alpine
-
+# Этап сборки
+FROM node:18 AS builder
 WORKDIR /app
-
-# Копируем package files
-COPY package*.json ./
-
-# Устанавливаем зависимости
-RUN npm install
-
-# Копируем исходный код
 COPY . .
+RUN npm install && npm run build
 
-# Экспортируем порт (Vite использует 5173 по умолчанию)
-EXPOSE 5173
-
-# Команда запуска для разработки с Vite
-CMD ["npm", "run", "dev", "--", "--host", "0.0.0.0"]
+# Этап сервера
+FROM nginx:alpine
+COPY --from=builder /app/dist /usr/share/nginx/html
+EXPOSE 80

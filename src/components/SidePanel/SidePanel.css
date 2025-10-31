@@ -1,14 +1,14 @@
 /* src/components/SidePanel/SidePanel.css */
 .side-panel {
-  position: fixed;
-  top: 0;
+  position: absolute; /* Позиционирование относительно родителя .main-content */
+  top: 60px; /* Выравнивание снизу ControlPanel */
   right: -400px;
   width: 380px;
-  height: 100vh;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-  box-shadow: -5px 0 25px rgba(0, 0, 0, 0.1);
+  height: calc(100vh - 60px); /* Высота за вычетом ControlPanel */
+  background: linear-gradient(135deg, #2c3e50 0%, #1a2a6c 100%); /* Обновлённый градиент */
+  box-shadow: -5px 0 25px rgba(0, 0, 0, 0.2); /* Усиленная тень */
   transition: right 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-  z-index: 1000;
+  z-index: 1001; /* Ниже ControlPanel */
   display: flex;
   flex-direction: column;
   overflow: hidden;
@@ -21,8 +21,8 @@
 .side-panel-header {
   background: rgba(255, 255, 255, 0.95);
   backdrop-filter: blur(10px);
-  padding: 20px 24px;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+  padding: 18px 24px; /* Уменьшен отступ сверху/снизу */
+  border-bottom: 1px solid rgba(102, 126, 234, 0.2);
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -31,20 +31,20 @@
 
 .side-panel-header h2 {
   margin: 0;
-  font-size: 20px;
+  font-size: 1.1em; /* Уменьшен размер */
   font-weight: 700;
-  background: linear-gradient(135deg, #667eea, #764ba2);
+  background: linear-gradient(135deg, #1a2a6c, #2c3e50); /* Обновлённый градиент */
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
 }
 
 .close-btn {
-  background: linear-gradient(135deg, #ff6b6b, #ee5a24);
+  background: linear-gradient(135deg, #ff6b6b, #ee5a24); /* Градиент */
   border: none;
   color: white;
-  width: 32px;
-  height: 32px;
+  width: 30px;
+  height: 30px;
   border-radius: 50%;
   display: flex;
   align-items: center;
@@ -78,8 +78,8 @@
   border: none;
   border-radius: 12px;
   font-size: 14px;
-  background: rgba(255, 255, 255, 0.9);
-  backdrop-filter: blur(10px);
+  background: rgba(255, 255, 255, 0.9); /* Прозрачный фон */
+  backdrop-filter: blur(10px); /* Эффект стекла */
   border: 1px solid rgba(102, 126, 234, 0.2);
   box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
   transition: all 0.3s ease;
@@ -89,17 +89,56 @@
   outline: none;
   border-color: #667eea;
   box-shadow: 0 4px 20px rgba(102, 126, 234, 0.3);
-  transform: translateY(-1px);
+  transform: translateY(-1px); /* Лёгкий подъём */
 }
 
-/* Секции групп */
-.loaded-groups-section {
-  margin-bottom: 24px;
-  background: rgba(255, 255, 255, 0.8);
+/* Переключатель вкладок */
+.tabs {
+  display: flex;
+  gap: 4px;
+  margin-bottom: 16px;
+  background: rgba(102, 126, 234, 0.1); /* Лёгкий фон */
+  border-radius: 10px;
+  padding: 4px;
+}
+
+.tab-btn {
+  flex: 1;
+  padding: 8px 12px;
+  border: none;
+  border-radius: 8px;
+  background: transparent;
+  color: #718096;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.tab-btn.active {
+  background: linear-gradient(135deg, #667eea, #764ba2); /* Градиент */
+  color: white;
+  box-shadow: 0 4px 10px rgba(102, 126, 234, 0.3);
+}
+
+.tab-btn:hover:not(.active) {
+  background: rgba(102, 126, 234, 0.15);
+  color: #2d3748;
+}
+
+/* Контент вкладки */
+.tab-content {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+/* Секция дня */
+.day-section {
+  background: rgba(255, 255, 255, 0.85); /* Прозрачный фон */
   border-radius: 16px;
   padding: 16px;
-  border: 1px solid rgba(255, 255, 255, 0.3);
-  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+  border: 1px solid rgba(102, 126, 234, 0.15); /* Тонкая граница */
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08); /* Лёгкая тень */
   backdrop-filter: blur(10px);
 }
 
@@ -107,7 +146,7 @@
   display: flex;
   align-items: center;
   gap: 10px;
-  margin-bottom: 16px;
+  margin-bottom: 12px; /* Уменьшен отступ */
   cursor: pointer;
   transition: all 0.3s ease;
   padding: 8px;
@@ -115,7 +154,7 @@
 }
 
 .section-header:hover {
-  background: rgba(102, 126, 234, 0.1);
+  background: rgba(102, 126, 234, 0.1); /* Лёгкий фон при наведении */
 }
 
 .section-header h3 {
@@ -124,6 +163,28 @@
   font-weight: 600;
   color: #2d3748;
   flex-grow: 1;
+}
+
+.section-header h4 {
+  margin: 0;
+  font-size: 14px;
+  font-weight: 600;
+  color: #4a5568;
+  flex-grow: 1;
+}
+
+.sub-header {
+  margin-left: 10px;
+  margin-right: 10px;
+  margin-top: 8px;
+  margin-bottom: 8px;
+  padding-left: 12px;
+  padding-right: 12px;
+  background: rgba(102, 126, 234, 0.05); /* Более светлый фон для подзаголовков */
+}
+
+.sub-header:hover {
+  background: rgba(102, 126, 234, 0.1); /* Более светлый фон при наведении */
 }
 
 .section-icon {
@@ -147,7 +208,7 @@
 }
 
 .clear-all-btn {
-  background: linear-gradient(135deg, #ff6b6b, #ee5a24);
+  background: linear-gradient(135deg, #ff6b6b, #ee5a24); /* Градиент */
   border: none;
   color: white;
   font-size: 11px;
@@ -169,20 +230,33 @@
   display: flex;
   flex-direction: column;
   gap: 8px;
+  padding-left: 20px; /* Отступ для вложенности */
+  padding-right: 20px;
 }
 
+/* Секции групп (уже внутри дня) */
+.loaded-groups-section {
+  background: transparent; /* Прозрачный фон внутри дня */
+  border-radius: 12px;
+  padding: 0;
+  border: none;
+  box-shadow: none; /* Без тени */
+  margin-bottom: 8px; /* Отступ между секциями точек и маршрутов */
+}
+
+/* Группа (точки/маршруты файла) */
 .group-item {
-  background: rgba(255, 255, 255, 0.9);
+  background: rgba(255, 255, 255, 0.9); /* Прозрачный фон */
   border-radius: 12px;
   border: 1px solid rgba(102, 126, 234, 0.1);
   overflow: hidden;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05); /* Лёгкая тень */
   transition: all 0.3s ease;
 }
 
 .group-item:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+  transform: translateY(-2px); /* Подъём при наведении */
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1); /* Более выраженная тень */
 }
 
 .group-header {
@@ -191,12 +265,12 @@
   gap: 10px;
   padding: 12px 16px;
   cursor: pointer;
-  background: rgba(102, 126, 234, 0.05);
+  background: rgba(102, 126, 234, 0.05); /* Лёгкий фон */
   transition: all 0.3s ease;
 }
 
 .group-header:hover {
-  background: rgba(102, 126, 234, 0.1);
+  background: rgba(102, 126, 234, 0.1); /* Более тёмный фон при наведении */
 }
 
 .group-icon {
@@ -217,7 +291,7 @@
 }
 
 .group-count {
-  background: linear-gradient(135deg, #667eea, #764ba2);
+  background: linear-gradient(135deg, #667eea, #764ba2); /* Градиент */
   color: white;
   font-size: 11px;
   font-weight: 600;
@@ -238,7 +312,7 @@
 }
 
 .remove-group-btn {
-  background: rgba(255, 107, 107, 0.1);
+  background: rgba(255, 107, 107, 0.1); /* Прозрачный фон */
   border: none;
   color: #ff6b6b;
   cursor: pointer;
@@ -251,9 +325,9 @@
 }
 
 .remove-group-btn:hover {
-  background: #ff6b6b;
+  background: #ff6b6b; /* Цвет фона при наведении */
   color: white;
-  transform: scale(1.1);
+  transform: scale(1.1); /* Увеличение */
 }
 
 /* Список элементов внутри группы */
@@ -271,6 +345,9 @@
 .group-item-content {
   padding: 12px 16px 12px 40px;
   border-top: 1px solid rgba(102, 126, 234, 0.1);
+  max-height: 250px;
+  overflow-y: auto;
+  overflow-x: hidden;
 }
 
 /* Стили для списка точек */
@@ -278,6 +355,7 @@
   display: flex;
   flex-direction: column;
   gap: 6px;
+  min-height: 20px;
 }
 
 .point-item {
@@ -285,7 +363,7 @@
   align-items: center;
   gap: 10px;
   padding: 8px 12px;
-  background: rgba(255, 255, 255, 0.8);
+  background: rgba(255, 255, 255, 0.8); /* Прозрачный фон */
   border-radius: 8px;
   border: 1px solid rgba(102, 126, 234, 0.1);
   cursor: pointer;
@@ -293,12 +371,12 @@
 }
 
 .point-item:hover {
-  background: rgba(102, 126, 234, 0.05);
-  transform: translateX(4px);
+  background: rgba(102, 126, 234, 0.05); /* Лёгкий фон при наведении */
+  transform: translateX(4px); /* Сдвиг при наведении */
 }
 
 .point-item.selected {
-  background: linear-gradient(135deg, rgba(102, 126, 234, 0.1), rgba(118, 75, 162, 0.1));
+  background: linear-gradient(135deg, rgba(102, 126, 234, 0.1), rgba(118, 75, 162, 0.1)); /* Градиент при выделении */
   border-color: #667eea;
 }
 
@@ -330,6 +408,7 @@
   display: flex;
   flex-direction: column;
   gap: 6px;
+  min-height: 20px;
 }
 
 .route-item {
@@ -337,15 +416,15 @@
   align-items: center;
   gap: 10px;
   padding: 8px 12px;
-  background: rgba(255, 255, 255, 0.8);
+  background: rgba(255, 255, 255, 0.8); /* Прозрачный фон */
   border-radius: 8px;
   border: 1px solid rgba(102, 126, 234, 0.1);
   transition: all 0.2s ease;
 }
 
 .route-item:hover {
-  background: rgba(102, 126, 234, 0.05);
-  transform: translateX(4px);
+  background: rgba(102, 126, 234, 0.05); /* Лёгкий фон при наведении */
+  transform: translateX(4px); /* Сдвиг при наведении */
 }
 
 .route-color {
@@ -399,47 +478,12 @@
 }
 
 .side-panel-content::-webkit-scrollbar-thumb {
-  background: linear-gradient(135deg, #667eea, #764ba2);
+  background: linear-gradient(135deg, #667eea, #764ba2); /* Градиент */
   border-radius: 3px;
 }
 
 .side-panel-content::-webkit-scrollbar-thumb:hover {
-  background: linear-gradient(135deg, #5a6fd8, #6a4190);
-}
-
-/* Адаптивность */
-@media (max-width: 768px) {
-  .side-panel {
-    width: 100vw;
-    right: -100vw;
-  }
-  
-  .side-panel.open {
-    right: 0;
-  }
-}
-
-/* src/components/SidePanel/SidePanel.css */
-/* ... предыдущие стили ... */
-
-/* Список элементов внутри группы */
-.group-items-list {
-  max-height: 0;
-  overflow: hidden;
-  transition: max-height 0.3s ease;
-  background: rgba(248, 250, 252, 0.8);
-}
-
-.group-items-list.expanded {
-  max-height: 300px; /* Ограничиваем максимальную высоту */
-}
-
-.group-item-content {
-  padding: 12px 16px 12px 40px;
-  border-top: 1px solid rgba(102, 126, 234, 0.1);
-  max-height: 250px; /* Ограничиваем высоту контента */
-  overflow-y: auto; /* Добавляем прокрутку */
-  overflow-x: hidden;
+  background: linear-gradient(135deg, #5a6fd8, #6a4190); /* Темнее при наведении */
 }
 
 /* Стили для прокрутки внутри групп */
@@ -453,12 +497,12 @@
 }
 
 .group-item-content::-webkit-scrollbar-thumb {
-  background: linear-gradient(135deg, #667eea, #764ba2);
+  background: linear-gradient(135deg, #667eea, #764ba2); /* Градиент */
   border-radius: 2px;
 }
 
 .group-item-content::-webkit-scrollbar-thumb:hover {
-  background: linear-gradient(135deg, #5a6fd8, #6a4190);
+  background: linear-gradient(135deg, #5a6fd8, #6a4190); /* Темнее при наведении */
 }
 
 /* Увеличиваем максимальную высоту для групп с большим количеством элементов */
@@ -468,47 +512,6 @@
 
 .group-item.large-group .group-item-content {
   max-height: 350px;
-}
-
-/* Стили для списка точек */
-.points-list {
-  display: flex;
-  flex-direction: column;
-  gap: 6px;
-  min-height: 20px; /* Минимальная высота для пустого списка */
-}
-
-.point-item {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  padding: 8px 12px;
-  background: rgba(255, 255, 255, 0.8);
-  border-radius: 8px;
-  border: 1px solid rgba(102, 126, 234, 0.1);
-  cursor: pointer;
-  transition: all 0.2s ease;
-  flex-shrink: 0; /* Предотвращаем сжатие элементов */
-}
-
-/* Стили для списка маршрутов */
-.routes-list {
-  display: flex;
-  flex-direction: column;
-  gap: 6px;
-  min-height: 20px;
-}
-
-.route-item {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  padding: 8px 12px;
-  background: rgba(255, 255, 255, 0.8);
-  border-radius: 8px;
-  border: 1px solid rgba(102, 126, 234, 0.1);
-  transition: all 0.2s ease;
-  flex-shrink: 0;
 }
 
 /* Индикатор прокрутки */
@@ -529,19 +532,6 @@
   opacity: 1;
 }
 
-/* Счетчик элементов */
-.group-count {
-  background: linear-gradient(135deg, #667eea, #764ba2);
-  color: white;
-  font-size: 11px;
-  font-weight: 600;
-  padding: 2px 8px;
-  border-radius: 12px;
-  min-width: 20px;
-  text-align: center;
-  position: relative;
-}
-
 /* Индикатор большого количества элементов */
 .group-count.large:after {
   content: '...';
@@ -558,15 +548,12 @@
   .group-items-list.expanded {
     max-height: 200px;
   }
-  
   .group-item-content {
     max-height: 150px;
   }
-  
   .group-item.large-group .group-items-list.expanded {
     max-height: 250px;
   }
-  
   .group-item.large-group .group-item-content {
     max-height: 200px;
   }
@@ -588,3 +575,104 @@
   border-radius: 8px;
   border: 1px dashed rgba(102, 126, 234, 0.3);
 }
+
+/* Стиль для пустой вкладки */
+.empty-tab-message {
+  padding: 20px;
+  text-align: center;
+  color: #718096;
+  font-size: 14px;
+  font-style: italic;
+  background: rgba(248, 250, 252, 0.5);
+  border-radius: 12px;
+  border: 1px dashed rgba(102, 126, 234, 0.2);
+}
+
+/* Адаптивность */
+@media (max-width: 768px) {
+  .side-panel {
+    width: 100vw;
+    right: -100vw;
+    height: calc(100vh - 60px); /* Адаптируем высоту */
+    top: 60px; /* Адаптируем позицию */
+  }
+  .side-panel.open {
+    right: 0;
+  }
+  /* Адаптируем отступы */
+  .side-panel-header,
+  .side-panel-content {
+    padding-left: 16px;
+    padding-right: 16px;
+  }
+  .group-item-content {
+    padding-left: 20px; /* Уменьшаем отступ слева */
+  }
+  .tabs {
+    flex-direction: column; /* Вкладки вертикально на мобильных */
+  }
+  .day-content {
+    padding-left: 8px; /* Уменьшаем отступ внутри дня */
+    padding-right: 8px;
+  }
+  .loaded-groups-list {
+    padding-left: 10px; /* Уменьшаем отступ для вложенности */
+    padding-right: 10px;
+  }
+}
+
+/* src/components/SidePanel/SidePanel.css */
+/* Добавьте эти стили в существующий файл */
+
+.visibility-controls {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-left: auto;
+}
+
+.visibility-btn {
+  background: none;
+  border: none;
+  color: #666;
+  cursor: pointer;
+  padding: 4px;
+  border-radius: 4px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s ease;
+}
+
+.visibility-btn:hover {
+  background-color: #f0f0f0;
+  color: #333;
+}
+
+.visibility-btn.hidden {
+  color: #999;
+}
+
+.visibility-btn.hidden:hover {
+  color: #666;
+}
+
+.group-controls {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  margin-left: auto;
+}
+
+.day-section.hidden,
+.group-item.hidden {
+  opacity: 0.6;
+  background-color: #f8f8f8;
+}
+
+.day-section.hidden .section-header,
+.group-item.hidden .group-header {
+  background-color: #f0f0f0;
+}
+
+/* Остальные существующие стили */

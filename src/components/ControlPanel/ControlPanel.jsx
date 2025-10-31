@@ -1,7 +1,7 @@
 // src/components/ControlPanel/ControlPanel.jsx
 import React, { useState } from 'react';
 import './ControlPanel.css';
-import { FaMapMarkerAlt, FaRoute, FaSlidersH, FaRocket, FaTrashAlt, FaDownload, FaUpload, FaChevronLeft, FaChevronRight, FaPrint, FaUser, FaMinus } from 'react-icons/fa';
+import { FaMapMarkerAlt, FaRoute, FaSlidersH, FaRocket, FaTrashAlt, FaDownload, FaUpload, FaChevronLeft, FaChevronRight, FaPrint, FaUser, FaMinus, FaMap, FaCrosshairs, FaCar } from 'react-icons/fa';
 
 const ControlPanel = ({
   groups = [],
@@ -30,6 +30,12 @@ const ControlPanel = ({
   isAuthenticated,
   toggleSidePanel,
   handlePointsGeoJSONUpload,
+  districtsList = [],
+  selectedDistrict,
+  onDistrictSelect,
+  // Добавляем пропсы для WebSocket
+  isWebSocketConnected = false,
+  carsCount = 0
 }) => {
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
 
@@ -48,6 +54,31 @@ const ControlPanel = ({
         <div className="app-brand">
           <div className="app-logo">🗺️</div>
           <span className="app-name">Карта</span>
+        </div>
+
+        {/* Селектор районов */}
+        <div className="control-group modern-select-wrapper">
+          <select
+            value={selectedDistrict || ''}
+            onChange={(e) => {
+              if (e.target.value) {
+                onDistrictSelect(e.target.value);
+              } else {
+                onDistrictSelect(null);
+              }
+            }}
+            className="modern-select"
+          >
+            <option value="">Районы</option>
+            {districtsList.map(district => (
+              <option key={district} value={district}>
+                {district}
+              </option>
+            ))}
+          </select>
+          <div className="select-arrow">
+            <FaMap />
+          </div>
         </div>
 
         {/* Селектор для добавления дорог */}
@@ -94,7 +125,7 @@ const ControlPanel = ({
           <div className="select-arrow">+</div>
         </div>
 
-        {/* Выпадающий список с кнопками действий (открывается по наведению) */}
+        {/* Выпадающий список с кнопками действий */}
         <div
           className="control-group modern-dropdown-wrapper"
           onMouseEnter={handleMouseEnter}
@@ -168,21 +199,18 @@ const ControlPanel = ({
             onChange={setShowRoutes}
             tooltip="Показать/скрыть маршруты"
           />
-          <ModernToggle
-            icon={<FaSlidersH />}
-            label="Дороги"
-            checked={showRoads}
-            onChange={setShowRoads}
-            tooltip="Показать/скрыть дороги"
-          />
-          {/* Кнопка "Панель" теперь просто переключает боковую панель */}
-          <ModernToggle
-            icon={<FaSlidersH />}
-            label="Панель"
-            checked={showButtons}
-            onChange={toggleSidePanel}
-            tooltip={showButtons ? "Скрыть боковую панель" : "Показать боковую панель"}
-          />
+          {/* Добавляем статус WebSocket */}
+          <div className="websocket-status" style={{ 
+            display: 'flex', 
+            alignItems: 'center', 
+            margin: '0 10px',
+            color: isWebSocketConnected ? 'green' : 'red',
+            fontWeight: 'bold',
+            fontSize: '14px'
+          }}>
+            {isWebSocketConnected ? '✅' : '❌'} WebSocket
+            {carsCount > 0 && <span style={{ marginLeft: '5px' }}>🚗 {carsCount}</span>}
+          </div>
         </div>
       </div>
 
