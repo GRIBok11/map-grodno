@@ -208,8 +208,8 @@ const ControlPanel = ({
             fontWeight: 'bold',
             fontSize: '14px'
           }}>
-            {isWebSocketConnected ? '✅' : '❌'} WebSocket
-            {carsCount > 0 && <span style={{ marginLeft: '5px' }}>🚗 {carsCount}</span>}
+            
+            
           </div>
         </div>
       </div>
