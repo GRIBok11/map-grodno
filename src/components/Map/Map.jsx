@@ -12,7 +12,7 @@ const createCarIcon = () => {
   return L.divIcon({
     html: `
       <div style="
-        background-color: #e6194b;
+        background-color: #e6194b;ф
         width: 24px;
         height: 24px;
         border: 3px solid white;

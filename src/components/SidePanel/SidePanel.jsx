@@ -1,7 +1,6 @@
-// src/components/SidePanel/SidePanel.jsx
 import React, { useState, useRef, useEffect } from 'react';
 import './SidePanel.css';
-import { FaTimes, FaMapMarkerAlt, FaRoute, FaRoad, FaMinus, FaChevronRight, FaChevronDown, FaCalendarAlt, FaEye, FaEyeSlash } from 'react-icons/fa';
+import { FaTimes, FaMapMarkerAlt, FaRoute, FaRoad, FaMinus, FaChevronRight, FaChevronDown, FaCalendarAlt, FaEye, FaEyeSlash, FaCar, FaSignal, FaClock, FaExclamationTriangle, FaWifi } from 'react-icons/fa';
 
 // Словарь дней недели
 const WEEK_DAYS = {
@@ -14,32 +13,46 @@ const WEEK_DAYS = {
   "воскресенье": "Воскресенье",
 };
 
+// 🔹 Тестовые данные для динамических объектов (машин)
+const TEST_VEHICLES = [
+  { id: 1, name: "МАЗ-5550", plate: "АВ 1234-7", driver: "Иванов И.И.", status: "on_schedule", delay: 0, lastUpdate: "2024-01-15 14:30:25", route: "Маршрут №1", connection: "online" },
+  { id: 2, name: "МАЗ-6312", plate: "АС 5678-7", driver: "Петров П.П.", status: "delayed", delay: 15, lastUpdate: "2024-01-15 14:28:12", route: "Маршрут №2", connection: "online" },
+  { id: 3, name: "Volvo FH", plate: "ВЕ 9012-7", driver: "Сидоров С.С.", status: "lost_connection", delay: 0, lastUpdate: "2024-01-15 13:15:45", route: "Маршрут №3", connection: "offline" },
+  { id: 4, name: "Scania R450", plate: "ВР 3456-7", driver: "Кузнецов К.К.", status: "on_schedule", delay: 0, lastUpdate: "2024-01-15 14:32:18", route: "Маршрут №1", connection: "online" },
+  { id: 5, name: "MAN TGX", plate: "ВХ 7890-7", driver: "Михайлов М.М.", status: "delayed", delay: 8, lastUpdate: "2024-01-15 14:29:55", route: "Маршрут №2", connection: "online" },
+];
+
 const SidePanel = ({
   isOpen,
   onClose,
   searchQuery,
   setSearchQuery,
   children,
-  loadedGroups = [], // Точки
+  loadedGroups = [],
   onGroupRemove,
-  loadedRoadGroups = [], // Маршруты
+  loadedRoadGroups = [],
   onRoadGroupRemove,
   onRoadsClear,
   points = [],
   routes = [],
   selectedPoints = [],
   onPointSelect,
-  onToggleDayVisibility, // Функция для переключения видимости дня
-  onToggleGroupVisibility, // Функция для переключения видимости группы
-  hiddenDays = {}, // Объект с скрытыми днями { dayName: boolean }
-  hiddenGroups = {} // Объект с скрытыми группами { groupName: boolean }
+  onToggleDayVisibility,
+  onToggleGroupVisibility,
+  hiddenDays = {},
+  hiddenGroups = {},
+  // 🔹 НОВЫЕ ПРОПСЫ ДЛЯ ДИНАМИЧЕСКИХ ОБЪЕКТОВ
+  showDynamicObjects = true,
+  vehicles = TEST_VEHICLES // Можно передавать из родительского компонента
 }) => {
   const [expandedSections, setExpandedSections] = useState({
     points: true,
-    routes: true
+    routes: true,
+    vehicles: true // Добавляем секцию с машинами
   });
   const [expandedGroups, setExpandedGroups] = useState({});
   const [activeTab, setActiveTab] = useState('current'); // 'current' или 'archive'
+  const [vehicleFilter, setVehicleFilter] = useState('all'); // 'all', 'on_schedule', 'delayed', 'lost_connection'
 
   const toggleSection = (section) => {
     setExpandedSections(prev => ({
@@ -55,7 +68,6 @@ const SidePanel = ({
     }));
   };
 
-  // Функция для переключения видимости дня
   const handleToggleDayVisibility = (day, e) => {
     e.stopPropagation();
     if (onToggleDayVisibility) {
@@ -63,7 +75,6 @@ const SidePanel = ({
     }
   };
 
-  // Функция для переключения видимости группы
   const handleToggleGroupVisibility = (group, e) => {
     e.stopPropagation();
     if (onToggleGroupVisibility) {
@@ -71,7 +82,32 @@ const SidePanel = ({
     }
   };
 
-  // Функция для определения дня недели из названия файла
+  // Фильтрация автомобилей
+  const getFilteredVehicles = () => {
+    if (vehicleFilter === 'all') return vehicles;
+    return vehicles.filter(v => v.status === vehicleFilter);
+  };
+
+  // Получение статуса автомобиля
+  const getVehicleStatusInfo = (status) => {
+    switch(status) {
+      case 'on_schedule':
+        return { icon: <FaClock />, text: 'По расписанию', color: '#22c55e', bgColor: '#dcfce7' };
+      case 'delayed':
+        return { icon: <FaExclamationTriangle />, text: 'Опаздывает', color: '#eab308', bgColor: '#fef9c3' };
+      case 'lost_connection':
+        return { icon: <FaWifi />, text: 'Потеряна связь', color: '#ef4444', bgColor: '#fee2e2' };
+      default:
+        return { icon: <FaCar />, text: 'Неизвестно', color: '#6b7280', bgColor: '#f3f4f6' };
+    }
+  };
+
+  // Форматирование задержки
+  const formatDelay = (minutes) => {
+    if (minutes === 0) return 'без опоздания';
+    return `опоздание ${minutes} мин`;
+  };
+
   const getDayFromFileName = (fileName) => {
     const lowerName = fileName.toLowerCase();
     for (const [dayKey, dayName] of Object.entries(WEEK_DAYS)) {
@@ -79,11 +115,9 @@ const SidePanel = ({
         return dayName;
       }
     }
-    // Если день не найден, возвращаем "Другое"
     return "Другое";
   };
 
-  // Группировка загруженных файлов по дням
   const groupedLoadedPoints = loadedGroups.reduce((acc, group) => {
     const day = getDayFromFileName(group);
     if (!acc[day]) acc[day] = [];
@@ -98,8 +132,6 @@ const SidePanel = ({
     return acc;
   }, {});
 
-  // --- Выбор данных для отображения в "Текущие" ---
-  // Текущие = загруженные
   const currentPointsGroupedByDay = loadedGroups.reduce((acc, group) => {
     const day = getDayFromFileName(group);
     const groupPoints = points.filter(point => point.group === group);
@@ -120,7 +152,6 @@ const SidePanel = ({
     return acc;
   }, {});
 
-  // --- Выбор данных для отображения в "Архив" ---
   const archivePoints = points.filter(p => !loadedGroups.includes(p.group));
   const archiveRoutes = routes.filter(r => r.type === 'geojson' && !loadedRoadGroups.includes(r.group));
   const archivePointsGroupedByDay = archivePoints.reduce((acc, point) => {
@@ -137,35 +168,26 @@ const SidePanel = ({
     return acc;
   }, {});
 
-  // --- Определение данных для отображения ---
   const displayPointsGroupedByDay = activeTab === 'current' ? currentPointsGroupedByDay : archivePointsGroupedByDay;
   const displayRoutesGroupedByDay = activeTab === 'current' ? currentRoutesGroupedByDay : archiveRoutesGroupedByDay;
 
-  // --- Создание полного списка дней с пустыми данными ---
   const getAllDaysWithData = () => {
-    // Все возможные дни (все дни недели + "Другое")
     const allPossibleDays = [...Object.values(WEEK_DAYS), "Другое"];
-    
-    // Собираем все дни, которые есть в данных
     const daysFromPoints = Object.keys(displayPointsGroupedByDay);
     const daysFromRoutes = Object.keys(displayRoutesGroupedByDay);
     const allDaysWithData = [...new Set([...daysFromPoints, ...daysFromRoutes])];
-    
-    // Добавляем все возможные дни, даже если данных нет
     const allDays = [...new Set([...allPossibleDays, ...allDaysWithData])];
-    
     return allDays;
   };
 
-  // --- Сортировка дней недели ---
   const sortDays = (days) => {
     const dayOrder = Object.values(WEEK_DAYS);
     return days.sort((a, b) => {
       const indexA = dayOrder.indexOf(a);
       const indexB = dayOrder.indexOf(b);
-      if (indexA === -1 && indexB === -1) return 0; // Оба "Другое"
-      if (indexA === -1) return 1; // "Другое" всегда в конце
-      if (indexB === -1) return -1; // "Другое" всегда в конце
+      if (indexA === -1 && indexB === -1) return 0;
+      if (indexA === -1) return 1;
+      if (indexB === -1) return -1;
       return indexA - indexB;
     });
   };
@@ -173,14 +195,12 @@ const SidePanel = ({
   const allDays = getAllDaysWithData();
   const sortedDays = sortDays(allDays);
 
-  // Функция для проверки, есть ли данные для дня
   const hasDataForDay = (day) => {
     const hasPoints = displayPointsGroupedByDay[day] && displayPointsGroupedByDay[day].length > 0;
     const hasRoutes = displayRoutesGroupedByDay[day] && displayRoutesGroupedByDay[day].length > 0;
     return hasPoints || hasRoutes;
   };
 
-  // Функция для получения всех групп в дне
   const getAllGroupsInDay = (day) => {
     const pointGroups = displayPointsGroupedByDay[day] 
       ? [...new Set(displayPointsGroupedByDay[day].map(point => point.group))]
@@ -191,16 +211,25 @@ const SidePanel = ({
     return [...new Set([...pointGroups, ...routeGroups])];
   };
 
-  // Функция для проверки, скрыт ли весь день (все группы скрыты)
   const isDayFullyHidden = (day) => {
     const groups = getAllGroupsInDay(day);
     if (groups.length === 0) return false;
     return groups.every(group => hiddenGroups[group]);
   };
 
+  // Статистика по автомобилям
+  const getVehicleStats = () => {
+    const total = vehicles.length;
+    const onSchedule = vehicles.filter(v => v.status === 'on_schedule').length;
+    const delayed = vehicles.filter(v => v.status === 'delayed').length;
+    const lostConnection = vehicles.filter(v => v.status === 'lost_connection').length;
+    return { total, onSchedule, delayed, lostConnection };
+  };
+
+  const stats = getVehicleStats();
+
   return (
     <div className={`side-panel ${isOpen ? 'open' : ''}`} role="complementary" aria-label="Боковая панель управления">
-
       <div className="side-panel-content">
         {/* Поиск */}
         <div className="search-section">
@@ -229,6 +258,112 @@ const SidePanel = ({
             Архив
           </button>
         </div>
+
+        {/* 🔹 Секция динамических объектов (машин) */}
+        {showDynamicObjects && (
+          <div className="dynamic-objects-section">
+            <div
+              className={`section-header ${expandedSections.vehicles ? 'expanded' : ''}`}
+              onClick={() => toggleSection('vehicles')}
+              role="button"
+              tabIndex="0"
+              onKeyDown={(e) => e.key === 'Enter' && toggleSection('vehicles')}
+            >
+              <FaCar className="section-icon" />
+              <h3>Динамические объекты</h3>
+              <span className="section-badge">{stats.total}</span>
+              <FaChevronDown className="expand-icon" />
+            </div>
+            
+            {expandedSections.vehicles && (
+              <div className="vehicles-content">
+                {/* Фильтры */}
+                <div className="vehicle-filters">
+                  <button 
+                    className={`filter-chip ${vehicleFilter === 'all' ? 'active' : ''}`}
+                    onClick={() => setVehicleFilter('all')}
+                  >
+                    Все ({stats.total})
+                  </button>
+                  <button 
+                    className={`filter-chip schedule ${vehicleFilter === 'on_schedule' ? 'active' : ''}`}
+                    onClick={() => setVehicleFilter('on_schedule')}
+                  >
+                    По расписанию ({stats.onSchedule})
+                  </button>
+                  <button 
+                    className={`filter-chip delayed ${vehicleFilter === 'delayed' ? 'active' : ''}`}
+                    onClick={() => setVehicleFilter('delayed')}
+                  >
+                    Опаздывают ({stats.delayed})
+                  </button>
+                  <button 
+                    className={`filter-chip lost ${vehicleFilter === 'lost_connection' ? 'active' : ''}`}
+                    onClick={() => setVehicleFilter('lost_connection')}
+                  >
+                    Потеря связи ({stats.lostConnection})
+                  </button>
+                </div>
+
+                {/* Список автомобилей */}
+                <div className="vehicles-list">
+                  {getFilteredVehicles().map(vehicle => {
+                    const statusInfo = getVehicleStatusInfo(vehicle.status);
+                    return (
+                      <div key={vehicle.id} className="vehicle-card">
+                        <div className="vehicle-header">
+                          <div className="vehicle-icon" style={{ backgroundColor: statusInfo.bgColor, color: statusInfo.color }}>
+                            {statusInfo.icon}
+                          </div>
+                          <div className="vehicle-info">
+                            <div className="vehicle-name">{vehicle.name}</div>
+                            <div className="vehicle-plate">{vehicle.plate}</div>
+                          </div>
+                          <div className={`vehicle-status ${vehicle.status}`}>
+                            {statusInfo.text}
+                          </div>
+                        </div>
+                        
+                        <div className="vehicle-details">
+                          <div className="detail-row">
+                            <span className="detail-label">Водитель:</span>
+                            <span className="detail-value">{vehicle.driver}</span>
+                          </div>
+                          <div className="detail-row">
+                            <span className="detail-label">Маршрут:</span>
+                            <span className="detail-value">{vehicle.route}</span>
+                          </div>
+                          {vehicle.status === 'delayed' && (
+                            <div className="detail-row delay-info">
+                              <span className="detail-label">⏰ Задержка:</span>
+                              <span className="detail-value delay-value">{formatDelay(vehicle.delay)}</span>
+                            </div>
+                          )}
+                          <div className="detail-row">
+                            <span className="detail-label">Последнее обновление:</span>
+                            <span className="detail-value">{vehicle.lastUpdate}</span>
+                          </div>
+                          <div className="detail-row">
+                            <span className="detail-label">Связь:</span>
+                            <span className={`connection-status ${vehicle.connection}`}>
+                              {vehicle.connection === 'online' ? '🟢 Онлайн' : '🔴 Оффлайн'}
+                            </span>
+                          </div>
+                        </div>
+                      </div>
+                    );
+                  })}
+                  
+                  {getFilteredVehicles().length === 0 && (
+                    <div className="empty-vehicles-message">
+                      Нет автомобилей с выбранным статусом
+                    </div>
+                  )}
+                </div>
+              </div>
+            )}
+          </div>
+        )}
 
         {/* Контент вкладок */}
         <div className="tab-content">
@@ -419,7 +554,7 @@ const GroupItem = ({
     }
   }, [isExpanded, items.length]);
 
-  return (
+    return (
     <div className={`group-item ${isLargeGroup ? 'large-group' : ''} ${isHidden ? 'hidden' : ''}`}>
       <div
         className={`group-header ${isExpanded ? 'expanded' : ''}`}
